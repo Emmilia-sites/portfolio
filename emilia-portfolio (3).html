@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emilia Virtanen — AI Web Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --bg2: #0a0a12;
+    --surface: #0f0f1a;
+    --surface2: #161625;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #7DF9C2;
+    --accent2: #4FC3F7;
+    --accent3: #FF6B9D;
+    --text: #F0EEF8;
+    --text2: #9896B0;
+    --text3: #5A5870;
+    --glow: rgba(125,249,194,0.15);
+    --glow2: rgba(79,195,247,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  a, button, [onclick],
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* Navigation */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 20px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(5,5,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 60px;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-cta {
+    padding: 10px 22px;
+    background: var(--accent);
+    color: #050508;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(125,249,194,0.3); }
+
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative;
+    padding: 120px 60px 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    animation: blobFloat 8s ease-in-out infinite;
+  }
+  .hero-blob-1 {
+    width: 600px; height: 600px;
+    background: var(--accent);
+    top: -100px; right: -100px;
+    animation-delay: 0s;
+  }
+  .hero-blob-2 {
+    width: 400px; height: 400px;
+    background: var(--accent2);
+    bottom: -50px; left: 20%;
+    animation-delay: 3s;
+  }
+  .hero-blob-3 {
+    width: 300px; height: 300px;
+    background: var(--accent3);
+    top: 30%; left: -100px;
+    animation-delay: 5s;
+    opacity: 0.07;
+  }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+  }
+
+  /* Grid lines background */
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+  .hero-eyebrow .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(56px, 8vw, 110px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    margin-bottom: 16px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+  .hero-name .line1 { display: block; color: var(--text); }
+  .hero-name .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text2);
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 560px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+  .hero-subtitle strong { color: var(--text); font-weight: 500; }
+
+  .hero-typing {
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    color: var(--accent2);
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s ease 0.5s both;
+    min-height: 22px;
+  }
+  .hero-typing .cursor-blink {
+    display: inline-block;
+    width: 2px; height: 16px;
+    background: var(--accent2);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 20px;
+    animation: fadeUp 0.8s ease 0.6s both;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 16px 32px;
+    background: var(--accent);
+    color: #050508;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(125,249,194,0.35); }
+  .btn-primary .arrow { transition: transform 0.3s ease; }
+  .btn-primary:hover .arrow { transform: translateX(4px); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 16px 32px;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(125,249,194,0.05);
+  }
+
+  .hero-stats {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 24px;
+    animation: fadeRight 0.8s ease 0.7s both;
+  }
+  @keyframes fadeRight {
+    from { transform: translateX(40px) translateY(-50%); opacity: 0; }
+    to { transform: translateX(0) translateY(-50%); opacity: 1; }
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  @keyframes fadeUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Section styles */
+  section { position: relative; }
+  .section-inner { max-width: 1200px; margin: 0 auto; padding: 0 60px; }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .section-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
+    margin-bottom: 20px;
+  }
+  .section-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-desc {
+    color: var(--text2);
+    font-size: 17px;
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  /* About Section */
+  .about {
+    padding: 120px 0;
+  }
+
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .about-card-main {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-card-main::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at top right, rgba(125,249,194,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .about-avatar {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .about-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(8px);
+  }
+
+  .about-card-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .about-card-role {
+    font-size: 13px;
+    color: var(--accent);
+    font-family: 'Fira Code', monospace;
+    margin-bottom: 20px;
+  }
+
+  .about-card-quote {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.6;
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    font-style: italic;
+  }
+
+  .floating-badge {
+    position: absolute;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    animation: floatBadge 4s ease-in-out infinite;
+    white-space: nowrap;
+  }
+  .floating-badge .badge-icon { font-size: 20px; }
+
+  .badge-1 { top: -20px; right: -20px; animation-delay: 0s; }
+  .badge-2 { bottom: -20px; left: -20px; animation-delay: 2s; }
+
+  @keyframes floatBadge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .about-content .timeline {
+    margin-top: 40px;
+  }
+  .timeline-item {
+    display: flex; gap: 20px;
+    padding-bottom: 28px;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 19px; top: 40px; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-item:last-child { padding-bottom: 0; }
+
+  .tl-dot {
+    width: 40px; height: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+  .timeline-item:hover .tl-dot {
+    border-color: var(--accent);
+    background: rgba(125,249,194,0.08);
+  }
+
+  .tl-year {
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .tl-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .tl-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* Skills Section */
+  .skills {
+    padding: 100px 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+    background: var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .skill-tile {
+    background: var(--surface);
+    padding: 36px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-tile::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(125,249,194,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .skill-tile:hover { background: var(--surface2); }
+  .skill-tile:hover::before { opacity: 1; }
+
+  .skill-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .skill-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .skill-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .skill-bar {
+    margin-top: 16px;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 1.5s cubic-bezier(0.34,1.56,0.64,1);
+    width: 0;
+  }
+  .skill-tile.in-view .skill-bar-fill { width: var(--fill); }
+
+  /* Tech stack marquee */
+  .tech-marquee {
+    padding: 40px 0;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 60px;
+  }
+  .tech-track {
+    display: flex; gap: 40px;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
+  .tech-track:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .tech-item {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--text3);
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .tech-item:hover { color: var(--accent); }
+  .tech-item .tech-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--text3);
+  }
+
+  /* Portfolio Section */
+  .portfolio {
+    padding: 120px 0;
+  }
+
+  .portfolio-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 60px;
+    gap: 40px;
+  }
+
+  .portfolio-filters {
+    display: flex; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(125,249,194,0.06);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34,1.2,0.64,1);
+    cursor: pointer;
+    position: relative;
+    group: true;
+  }
+  .project-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(125,249,194,0.06);
+  }
+
+  .project-card.featured {
+    grid-column: span 2;
+  }
+
+  .project-thumb {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+  .project-card.featured .project-thumb { height: 280px; }
+
+  .project-thumb iframe {
+    width: 200%;
+    height: 200%;
+    transform: scale(0.5);
+    transform-origin: top left;
+    pointer-events: none;
+    border: none;
+    position: absolute; top: 0; left: 0;
+  }
+
+  .project-thumb-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, var(--surface) 100%);
+    z-index: 1;
+  }
+
+  .project-hover-overlay {
+    position: absolute; inset: 0;
+    background: rgba(5,5,8,0.85);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+  }
+  .project-card:hover .project-hover-overlay { opacity: 1; }
+
+  .project-preview-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 24px;
+    background: var(--accent);
+    color: #050508;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .project-preview-btn:hover { transform: scale(1.05); }
+
+  .project-info {
+    padding: 24px;
+  }
+
+  .project-tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .project-tag {
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(125,249,194,0.08);
+    border: 1px solid rgba(125,249,194,0.15);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .project-tag.blue {
+    color: var(--accent2);
+    background: rgba(79,195,247,0.08);
+    border-color: rgba(79,195,247,0.15);
+  }
+
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+  }
+  .project-card:hover .project-title { color: var(--accent); }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .project-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .project-link {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: gap 0.2s ease;
+  }
+  .project-link:hover { gap: 10px; }
+
+  /* Testimonials */
+  .testimonials {
+    padding: 120px 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  .testimonial-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: 20px; right: 24px;
+    font-size: 80px;
+    font-family: 'Syne', sans-serif;
+    color: var(--border2);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .testimonial-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+
+  .testimonial-card.featured {
+    border-color: rgba(125,249,194,0.2);
+    background: linear-gradient(135deg, var(--surface), rgba(125,249,194,0.03));
+  }
+
+  .stars {
+    display: flex; gap: 3px;
+    margin-bottom: 16px;
+    color: #FFD700;
+    font-size: 14px;
+  }
+
+  .testimonial-text {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .author-avatar {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .author-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .author-role {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .result-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 16px;
+    padding: 6px 12px;
+    background: rgba(125,249,194,0.08);
+    border: 1px solid rgba(125,249,194,0.2);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .result-badge::before { content: '↑'; }
+
+  /* AI Chat Section */
+  .ai-section {
+    padding: 120px 0;
+  }
+
+  .ai-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .ai-chat-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(125,249,194,0.06);
+  }
+
+  .ai-chat-header {
+    padding: 20px 24px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ai-status-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .ai-chat-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .ai-chat-status {
+    font-size: 11px;
+    color: var(--accent);
+    font-family: 'Fira Code', monospace;
+  }
+
+  .ai-chat-messages {
+    padding: 24px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-msg {
+    max-width: 85%;
+    animation: msgIn 0.4s ease both;
+  }
+  @keyframes msgIn {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .ai-msg.ai-side {
+    align-self: flex-start;
+  }
+  .ai-msg.user-side {
+    align-self: flex-end;
+  }
+
+  .ai-bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .ai-side .ai-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px 16px 16px 16px;
+    color: var(--text);
+  }
+  .user-side .ai-bubble {
+    background: linear-gradient(135deg, rgba(125,249,194,0.15), rgba(79,195,247,0.1));
+    border: 1px solid rgba(125,249,194,0.2);
+    border-radius: 16px 4px 16px 16px;
+    color: var(--text);
+  }
+
+  .ai-msg-label {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: 'Fira Code', monospace;
+    margin-bottom: 5px;
+  }
+  .user-side .ai-msg-label { text-align: right; }
+
+  .ai-chat-input {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px;
+  }
+  .ai-input-field {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .ai-input-field:focus { border-color: var(--accent); }
+  .ai-input-field::placeholder { color: var(--text3); }
+
+  .ai-send-btn {
+    width: 42px; height: 42px;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #050508;
+    font-size: 18px;
+  }
+  .ai-send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(125,249,194,0.4); }
+
+  .typing-indicator {
+    display: flex; gap: 4px; padding: 14px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px 16px 16px 16px;
+    width: fit-content;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--text3);
+    border-radius: 50%;
+    animation: typingAnim 1.2s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingAnim {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); background: var(--accent); }
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(125,249,194,0.05) 0%, transparent 70%);
+  }
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .cta-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.0;
+    margin-bottom: 24px;
+  }
+  .cta-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cta-desc {
+    font-size: 18px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  /* Footer */
+  footer {
+    padding: 60px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--text);
+  }
+  .footer-logo span { color: var(--accent); }
+
+  .footer-links {
+    display: flex; gap: 32px;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--text3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  .footer-copy {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'Fira Code', monospace;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.34,1.2,0.64,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* Mobile nav toggle */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .nav-hamburger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* Project modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(5,5,8,0.9);
+    backdrop-filter: blur(20px);
+    z-index: 9000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 24px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 85vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; flex-direction: column;
+  }
+  .modal-overlay.open .modal { transform: scale(1); }
+  .modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-close {
+    width: 36px; height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { border-color: var(--accent3); color: var(--accent3); }
+  .modal-body {
+    padding: 32px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-iframe-wrap {
+    width: 100%;
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    background: var(--surface2);
+  }
+  .modal-iframe-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  @media (max-width: 1100px) {
+    .hero-stats { display: none; }
+    .projects-grid { grid-template-columns: 1fr 1fr; }
+    .project-card.featured { grid-column: span 2; }
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    nav.scrolled { padding: 12px 24px; }
+    .nav-links, .nav-cta { display: none; }
+    .nav-hamburger { display: flex; }
+    .hero { padding: 100px 24px 60px; }
+    .section-inner { padding: 0 24px; }
+    .about-inner, .ai-inner { grid-template-columns: 1fr; gap: 40px; }
+    .portfolio-header { flex-direction: column; align-items: flex-start; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Emilia<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#testimonials">Results</a></li>
+    <li><a href="#ai">AI Assistant</a></li>
+  </ul>
+  <a href="#ai" class="nav-cta">Let's Talk →</a>
+  <div class="nav-hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-blob hero-blob-3"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Available for new projects · Based in Helsinki, Finland
+    </div>
+    <h1 class="hero-name">
+      <span class="line1">Emilia</span>
+      <span class="line2">Virtanen</span>
+    </h1>
+    <p class="hero-subtitle">
+      AI Web Architect & Developer. Coding since age <strong>7</strong> — building AI-integrated websites for Finnish businesses that <strong>close more sales</strong>, not just look good.
+    </p>
+    <div class="hero-typing">
+      <span id="typingText"></span><span class="cursor-blink"></span>
+    </div>
+    <div class="hero-actions">
+      <a href="#portfolio" class="btn-primary">See My Work <span class="arrow">→</span></a>
+      <a href="#ai" class="btn-secondary">🤖 Ask My AI</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="stat-num" data-target="8">0</span>
+      <span class="stat-label">Websites Live</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="215" data-suffix="%">0%</span>
+      <span class="stat-label">Avg Conversion Lift</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="17">0</span>
+      <span class="stat-label">Years Coding</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" data-target="100" data-suffix="%">0%</span>
+      <span class="stat-label">Client Satisfaction</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-inner">
+    <div class="about-inner">
+      <div class="about-visual reveal">
+        <div class="about-card-main">
+          <div class="about-avatar">👩‍💻</div>
+          <div class="about-card-name">Emilia Virtanen</div>
+          <div class="about-card-role">// AI Web Architect · Helsinki</div>
+          <blockquote class="about-card-quote">
+            "I don't just build websites. I build AI-powered sales machines that work for Finnish businesses 24/7."
+          </blockquote>
+        </div>
+        <div class="floating-badge badge-1">
+          <span class="badge-icon">🏆</span>
+          <div>
+            <div style="font-weight:600;font-size:13px;">Top-Rated Developer</div>
+            <div style="font-size:11px;color:var(--text3);">Finland 2024</div>
+          </div>
+        </div>
+        <div class="floating-badge badge-2">
+          <span class="badge-icon">🤖</span>
+          <div>
+            <div style="font-weight:600;font-size:13px;">AI-First Approach</div>
+            <div style="font-size:11px;color:var(--text3);">Every project</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-content">
+        <div class="section-label reveal">My Story</div>
+        <h2 class="section-title reveal reveal-delay-1">From <em>age 7</em><br>to AI architect</h2>
+        <p class="section-desc reveal reveal-delay-2">I wrote my first lines of code when most kids were learning to ride bikes. Today, I combine that foundation with cutting-edge AI to help Finnish businesses compete in the digital age — and actually win.</p>
+
+        <div class="timeline reveal reveal-delay-3">
+          <div class="timeline-item">
+            <div class="tl-dot">🎮</div>
+            <div>
+              <div class="tl-year">Age 7 · 2014</div>
+              <div class="tl-title">First Lines of Code</div>
+              <div class="tl-desc">Started modding games, discovered the power of programming through play.</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot">🌐</div>
+            <div>
+              <div class="tl-year">Age 14 · 2021</div>
+              <div class="tl-title">First Client Website</div>
+              <div class="tl-desc">Built and launched a full website for a local Finnish business at 14 years old.</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot">🤖</div>
+            <div>
+              <div class="tl-year">Age 16 · 2023</div>
+              <div class="tl-title">AI Integration Pioneer</div>
+              <div class="tl-desc">Started integrating AI chatbots and smart sales systems into every build.</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="tl-dot">🚀</div>
+            <div>
+              <div class="tl-year">Today · 2025</div>
+              <div class="tl-title">8+ Live Projects</div>
+              <div class="tl-desc">Building AI-powered websites that consistently outperform old sites by 200%+.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills" id="skills">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">What I Do</div>
+      <h2 class="section-title">Skills that <em>ship</em> results</h2>
+    </div>
+
+    <div class="skills-grid reveal reveal-delay-1">
+      <div class="skill-tile" data-reveal>
+        <span class="skill-icon">🤖</span>
+        <div class="skill-name">AI Integration</div>
+        <div class="skill-desc">Custom chatbots, lead qualification AI, smart booking systems that convert visitors into customers.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 97%"></div></div>
+      </div>
+      <div class="skill-tile">
+        <span class="skill-icon">⚡</span>
+        <div class="skill-name">Web Performance</div>
+        <div class="skill-desc">Blazing fast sites with perfect Core Web Vitals. Speed is a feature, not an afterthought.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 94%"></div></div>
+      </div>
+      <div class="skill-tile">
+        <span class="skill-icon">🎨</span>
+        <div class="skill-name">UI/UX Design</div>
+        <div class="skill-desc">Interfaces that feel intuitive and look premium — designed to guide users toward action.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 91%"></div></div>
+      </div>
+      <div class="skill-tile">
+        <span class="skill-icon">📱</span>
+        <div class="skill-name">Mobile-First</div>
+        <div class="skill-desc">Every site works perfectly on every device. Over 70% of Finnish visitors browse on mobile.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 99%"></div></div>
+      </div>
+      <div class="skill-tile">
+        <span class="skill-icon">🔍</span>
+        <div class="skill-name">SEO & Analytics</div>
+        <div class="skill-desc">Built-in search optimization and data tracking so you always know what's working.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 88%"></div></div>
+      </div>
+      <div class="skill-tile">
+        <span class="skill-icon">💰</span>
+        <div class="skill-name">Conversion Optimization</div>
+        <div class="skill-desc">Every element is tested and designed to turn visitors into paying customers.</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--fill: 95%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tech-marquee">
+    <div class="tech-track" id="techTrack">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="portfolio" id="portfolio">
+  <div class="section-inner">
+    <div class="portfolio-header">
+      <div>
+        <div class="section-label reveal">Portfolio</div>
+        <h2 class="section-title reveal reveal-delay-1">Real sites,<br><em>real results</em></h2>
+      </div>
+      <div class="portfolio-filters reveal reveal-delay-2">
+        <button class="filter-btn active" data-filter="all">All Projects</button>
+        <button class="filter-btn" data-filter="health">Health</button>
+        <button class="filter-btn" data-filter="services">Services</button>
+        <button class="filter-btn" data-filter="automotive">Auto</button>
+        <button class="filter-btn" data-filter="travel">Travel</button>
+      </div>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">Client Results</div>
+      <h2 class="section-title">What clients <em>say</em></h2>
+      <p class="section-desc">Don't just take my word for it — here's what Finnish business owners say after working with me.</p>
+    </div>
+
+    <div class="testimonials-grid reveal reveal-delay-1">
+      <div class="testimonial-card featured">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Emilia built us an AI chatbot that handles 80% of customer inquiries automatically. Our gym membership signups tripled in the first month. She's not just a developer — she's a growth partner.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));">💪</div>
+          <div>
+            <div class="author-name">Mikko Leinonen</div>
+            <div class="author-role">Owner, FitZone Helsinki</div>
+          </div>
+        </div>
+        <div class="result-badge">312% more signups in 30 days</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Our car dealership website was terrible. Emilia completely transformed it with an AI that pre-qualifies leads. We're now getting 3x more serious inquiries every week.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#FF6B9D,#FF8C42);">🚗</div>
+          <div>
+            <div class="author-name">Jari Korhonen</div>
+            <div class="author-role">Director, Nordic Auto Group</div>
+          </div>
+        </div>
+        <div class="result-badge">3x qualified leads weekly</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">As a therapist, I was skeptical about AI on my website. But Emilia created something warm and helpful — clients book sessions through the AI chat at midnight and I wake up to full calendars!</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,var(--accent2),#8B5CF6);">🧠</div>
+          <div>
+            <div class="author-name">Dr. Aino Mäkinen</div>
+            <div class="author-role">Clinical Psychologist, Helsinki</div>
+          </div>
+        </div>
+        <div class="result-badge">40% more bookings overnight</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">My travel agency was dying post-COVID. Emilia built us a new site with an AI travel consultant. Bookings are up 180% and customers love the instant itinerary suggestions.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#FFD700,#FF6B35);">✈️</div>
+          <div>
+            <div class="author-name">Tuulikki Rantanen</div>
+            <div class="author-role">CEO, Arctic Travel Finland</div>
+          </div>
+        </div>
+        <div class="result-badge">180% booking increase</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Emilia coded this for our daycare and parents keep telling us the website is better than any nursery they've visited in London. The AI answers parent questions at all hours — incredible!</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#7DF9C2,#4FC3F7);">🏫</div>
+          <div>
+            <div class="author-name">Sarah Mitchell</div>
+            <div class="author-role">Manager, Sunshine Daycare UK</div>
+          </div>
+        </div>
+        <div class="result-badge">62% more parent inquiries</div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">She delivered our renovation company site in a week. The AI lead capture form alone has brought us €40,000 in new contracts. Emilia is the best investment we've made this year.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">🏗️</div>
+          <div>
+            <div class="author-name">Pekka Virtanen</div>
+            <div class="author-role">Owner, Pro Renovators UK</div>
+          </div>
+        </div>
+        <div class="result-badge">€40k in new contracts</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI CHAT SECTION -->
+<section class="ai-section" id="ai">
+  <div class="section-inner">
+    <div class="ai-inner">
+      <div class="reveal">
+        <div class="section-label">AI Assistant</div>
+        <h2 class="section-title">Ask me<br><em>anything</em></h2>
+        <p class="section-desc" style="margin-bottom:32px;">My AI is trained on all my work, pricing, and process. Get instant answers about your project — even at 3am.</p>
+
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;background:rgba(125,249,194,0.1);border:1px solid rgba(125,249,194,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⚡</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">Instant responses</div>
+              <div style="font-size:12px;color:var(--text3);">No waiting, no forms, no sales calls</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎯</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">Project-specific advice</div>
+              <div style="font-size:12px;color:var(--text3);">Tailored to your industry and goals</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">💬</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">Emilia-powered brain</div>
+              <div style="font-size:12px;color:var(--text3);">Knows my entire portfolio, process & pricing</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal reveal-delay-2">
+        <div class="ai-chat-widget">
+          <div class="ai-chat-header">
+            <div class="ai-status-dot"></div>
+            <div>
+              <div class="ai-chat-name">Emilia's AI Assistant</div>
+              <div class="ai-chat-status">online · responds instantly</div>
+            </div>
+          </div>
+          <div class="ai-chat-messages" id="chatMessages">
+            <div class="ai-msg ai-side">
+              <div class="ai-msg-label">Emilia AI</div>
+              <div class="ai-bubble">Hi! 👋 I'm Emilia's AI assistant. I know everything about her work, pricing, and process. What can I help you with?</div>
+            </div>
+          </div>
+          <div class="ai-chat-input">
+            <input class="ai-input-field" id="chatInput" type="text" placeholder="Ask about pricing, timeline, or your project..." />
+            <button class="ai-send-btn" onclick="sendMessage()">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner reveal">
+    <div class="section-label" style="justify-content:center;">Let's Build Something</div>
+    <h2 class="cta-title">Ready to grow<br><em>your business?</em></h2>
+    <p class="cta-desc">Join Finnish businesses that use AI-powered websites to close more sales, automatically.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="#ai" class="btn-primary" style="font-size:16px;padding:18px 36px;">Start a Project <span class="arrow">→</span></a>
+      <a href="#portfolio" class="btn-secondary" style="font-size:16px;padding:18px 36px;">See More Work</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Emilia<span>.</span></div>
+  <ul class="footer-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#testimonials">Results</a></li>
+    <li><a href="#ai">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Emilia Virtanen · Helsinki, Finland</div>
+</footer>
+
+<script>
+// ——————————————————————————
+// Nav scroll
+// ——————————————————————————
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ——————————————————————————
+// Hero typing effect
+// ——————————————————————————
+const phrases = [
+  'Building AI websites that close sales...',
+  'Coding since age 7...',
+  'Turning visitors into customers...',
+  'AI-powered • Finland-made • Results-driven...',
+  'const revenue = website.withAI();',
+];
+let pi = 0, ci = 0, deleting = false;
+const typingEl = document.getElementById('typingText');
+function typeLoop() {
+  const phrase = phrases[pi];
+  if (!deleting) {
+    typingEl.textContent = phrase.slice(0, ci + 1);
+    ci++;
+    if (ci === phrase.length) { deleting = true; setTimeout(typeLoop, 2000); return; }
+  } else {
+    typingEl.textContent = phrase.slice(0, ci - 1);
+    ci--;
+    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; setTimeout(typeLoop, 400); return; }
+  }
+  setTimeout(typeLoop, deleting ? 30 : 55);
+}
+typeLoop();
+
+// ——————————————————————————
+// Scroll reveal
+// ——————————————————————————
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.classList.contains('skill-tile')) e.target.classList.add('in-view');
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal, .skill-tile').forEach(el => ro.observe(el));
+
+// ——————————————————————————
+// Stats counter
+// ——————————————————————————
+const sr2 = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target;
+      const target = parseInt(el.dataset.target);
+      const suffix = el.dataset.suffix || '';
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 40));
+      const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current + suffix;
+        if (current >= target) clearInterval(timer);
+      }, 40);
+      sr2.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => sr2.observe(el));
+
+// ——————————————————————————
+// Tech marquee
+// ——————————————————————————
+const techs = ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'OpenAI API', 'Claude AI', 'Vercel', 'Supabase', 'Stripe', 'Framer Motion', 'Node.js', 'PostgreSQL', 'Figma', 'Three.js', 'GSAP', 'Webflow'];
+const track = document.getElementById('techTrack');
+const doubled = [...techs, ...techs];
+track.innerHTML = doubled.map(t => `<span class="tech-item"><span class="tech-dot"></span>${t}</span>`).join('');
+
+// ——————————————————————————
+// Projects
+// ——————————————————————————
+const projects = [
+  {
+    title: 'Sunshine Daycare',
+    desc: 'AI-powered parent portal with instant Q&A chatbot, waitlist management, and automated enrollment.',
+    url: 'https://huxu0-dot.github.io/ukdaycaredemo/',
+    tags: ['AI Chat', 'Healthcare'], cat: 'health',
+    result: '+62% inquiries', featured: true,
+    color: 'var(--accent)'
+  },
+  {
+    title: 'UK Tax Advisor',
+    desc: 'Smart tax consultation site with AI pre-qualifier that books 40% more consultations.',
+    url: 'https://huxu0-dot.github.io/uktaxadvisorwebdemo/',
+    tags: ['Finance', 'Lead Gen'], cat: 'services',
+    result: '+40% bookings',
+    color: 'var(--accent2)'
+  },
+  {
+    title: 'Nordic Auto (UK)',
+    desc: 'Premium car dealership with AI vehicle finder. Tripled qualified leads in 30 days.',
+    url: 'https://huxu0-dot.github.io/ukcardealershipdemo/',
+    tags: ['Automotive', 'AI Sales'], cat: 'automotive',
+    result: '3x leads',
+    color: '#FF6B9D'
+  },
+  {
+    title: 'CarDealership Pro',
+    desc: 'Full dealership platform with inventory AI, financing calculator and instant chat support.',
+    url: 'https://huxu0-dot.github.io/cardealershipdemo/',
+    tags: ['Automotive', 'E-Commerce'], cat: 'automotive',
+    result: '+180% test drives',
+    color: '#FFD700'
+  },
+  {
+    title: 'FitZone UK Gym',
+    desc: 'Fitness studio website with AI membership advisor. Tripled signups in first month.',
+    url: 'https://huxu0-dot.github.io/ukgymdemo/',
+    tags: ['Health', 'AI Chat'], cat: 'health',
+    result: '+312% signups',
+    color: 'var(--accent)'
+  },
+  {
+    title: 'MindSpace Therapy',
+    desc: 'Mental health services platform with warm, empathetic AI that books appointments around the clock.',
+    url: 'https://huxu0-dot.github.io/ukMentalhealth-therapyservices-demo/',
+    tags: ['Mental Health', 'Booking AI'], cat: 'health',
+    result: '+40% bookings',
+    color: 'var(--accent2)'
+  },
+  {
+    title: 'Pro Renovators UK',
+    desc: 'Home renovation company with AI lead capture and project estimator. Generated €40k in first quarter.',
+    url: 'https://huxu0-dot.github.io/ukhomerenovatorsdemo/',
+    tags: ['Construction', 'Lead Gen'], cat: 'services',
+    result: '€40k new contracts',
+    color: '#F59E0B'
+  },
+  {
+    title: 'Arctic Travel Finland',
+    desc: 'AI travel consultant that creates instant itineraries and books packages. 180% booking increase.',
+    url: 'https://huxu0-dot.github.io/uktravelagenciesdemo/',
+    tags: ['Travel', 'AI Guide'], cat: 'travel',
+    result: '+180% bookings',
+    color: '#8B5CF6'
+  },
+];
+
+function renderProjects(filter) {
+  const grid = document.getElementById('projectsGrid');
+  const filtered = filter === 'all' ? projects : projects.filter(p => p.cat === filter);
+  grid.innerHTML = filtered.map((p, i) => `
+    <div class="project-card ${i === 0 && filter === 'all' ? 'featured' : ''} reveal" data-cat="${p.cat}" onclick="openModal(${projects.indexOf(p)})">
+      <div class="project-thumb">
+        <iframe src="${p.url}" loading="lazy" title="${p.title}" scrolling="no"></iframe>
+        <div class="project-thumb-overlay"></div>
+        <div class="project-hover-overlay">
+          <span class="project-preview-btn">👁 Preview Site</span>
+        </div>
+      </div>
+      <div class="project-info">
+        <div class="project-tags">
+          ${p.tags.map((t, ti) => `<span class="project-tag ${ti % 2 === 1 ? 'blue' : ''}">${t}</span>`).join('')}
+        </div>
+        <div class="project-title">${p.title}</div>
+        <div class="project-desc">${p.desc}</div>
+        <div class="project-meta">
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);">↑ ${p.result}</span>
+          <a class="project-link" href="${p.url}" target="_blank" onclick="event.stopPropagation()">Live Site ↗</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+}
+
+renderProjects('all');
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderProjects(btn.dataset.filter);
+  });
+});
+
+// ——————————————————————————
+// Modal
+// ——————————————————————————
+function openModal(i) {
+  const p = projects[i];
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalTags').textContent = p.tags.join(' · ');
+  document.getElementById('modalDesc').textContent = p.desc + ' Result: ' + p.result;
+  document.getElementById('modalIframe').src = p.url;
+  document.getElementById('modalLink').href = p.url;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById('modalIframe').src = '';
+  document.body.style.overflow = '';
+}
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ——————————————————————————
+// AI Chat
+// ——————————————————————————
+const SYSTEM_PROMPT = `You are Emilia Virtanen's AI assistant on her portfolio website. Emilia is a 24-year-old web developer based in Helsinki, Finland who has been coding since age 7. She builds AI-integrated websites for Finnish businesses that help them close more sales. She has built 8+ websites including: a daycare, tax advisor, car dealerships (2), gym, mental health/therapy services, home renovators, and travel agency - all with AI integrations. 
+
+Her services include: AI-powered websites, chatbot integration, lead generation optimization, mobile-first design, SEO, conversion optimization. 
+
+Pricing: starter websites from €1,500, full AI-integrated sites from €3,500, ongoing support packages available. Timeline: 1-3 weeks typical.
+
+Results her clients have seen: +62% inquiries (daycare), +40% bookings (tax/therapy), 3x leads (car), +312% signups (gym), €40k new contracts (renovation), +180% bookings (travel).
+
+Be friendly, conversational, and Finnish/professional. Answer questions about her work, process, pricing, and how AI websites can help businesses. Keep responses under 3 sentences. If asked for contact, say to email hello@emiliavirtanen.fi or book a free call through the chat.`;
+
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+
+function addMsg(text, isAI) {
+  const div = document.createElement('div');
+  div.className = `ai-msg ${isAI ? 'ai-side' : 'user-side'}`;
+  div.innerHTML = `
+    <div class="ai-msg-label">${isAI ? 'Emilia AI' : 'You'}</div>
+    <div class="ai-bubble">${text}</div>
+  `;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'ai-msg ai-side';
+  div.id = 'typingIndicator';
+  div.innerHTML = `
+    <div class="ai-msg-label">Emilia AI</div>
+    <div class="typing-indicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+const chatHistory = [];
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  chatInput.value = '';
+
+  addMsg(text, false);
+  chatHistory.push({ role: 'user', content: text });
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+    const reply = data.content?.[0]?.text || "I'm having a moment — try again!";
+    chatHistory.push({ role: 'assistant', content: reply });
+    addMsg(reply, true);
+  } catch (e) {
+    removeTyping();
+    addMsg("Sorry, I had a connection issue. Try again or email hello@emiliavirtanen.fi!", true);
+  }
+}
+
+chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+</script>
+</body>
+</html>
